@@ -12,7 +12,7 @@ GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y, const unsigned char *
   bitmap = _bitmap;
 
   position = Vector2(_x, _y);
-  velocity = Vector2(0, 0);
+  velocity = Vector2(-1, 0);
 
   enabled = true;
 }
@@ -25,8 +25,8 @@ void GiftObject::Update() {
   if (!enabled)
     return;
   
-  if (position.x >= 128)
-    position.x = -16;
+  if (position.x <= -16)
+    position.x = 128;
   
   updatePosition();
   draw();
@@ -47,6 +47,7 @@ void GiftObject::SetVelocity(int x, int y) {
  */
 
 void GiftObject::draw() {
+  arduboy->fillRect(position.x, position.y, IMAGE_SIZE, IMAGE_SIZE, BLACK);
   arduboy->drawBitmap(position.x, position.y, bitmap, IMAGE_SIZE, IMAGE_SIZE, WHITE);
 }
 
