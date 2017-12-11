@@ -14,7 +14,8 @@ using namespace std;
 void setup() {
   // put your setup code here, to run once:
   arduboy.begin();
-  arduboy.setFrameRate(24);
+  arduboy.setFrameRate(36);
+  arduboy.initRandomSeed();
 
   statePrePlay();
 }
@@ -22,8 +23,9 @@ void setup() {
 void loop() {
   if (!(arduboy.nextFrame()))
     return;
-  
+
   arduboy.clear();
+  arduboy.pollButtons();
 
   statePlaying();
 

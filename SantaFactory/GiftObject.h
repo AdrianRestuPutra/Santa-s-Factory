@@ -8,20 +8,21 @@
 class GiftObject {
   public:
     GiftObject();
-    GiftObject(Arduboy2 &arduboy, int x, int y, const uint8_t *bitmap);
+    GiftObject(Arduboy2 &arduboy, int x, int y);
     
     void SetPosition(int x, int y);
     void SetVelocity(int x, int y);
     void Update();
 
     bool enabled;
+    
+    Vector2 position;
+    
+    int giftType;
 
   private:
     Arduboy2 *arduboy;
-   
-    const uint8_t *bitmap;
 
-    Vector2 position;
     Vector2 velocity;
 
     void draw();

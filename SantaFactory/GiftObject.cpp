@@ -1,4 +1,5 @@
 #include "GiftObject.h"
+#include "Images.h"
 
 const static int IMAGE_SIZE = 16;
 
@@ -6,15 +7,15 @@ const static int IMAGE_SIZE = 16;
  * CONSTRUCTOR
  */
 
-GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y, const unsigned char *_bitmap) {
+GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y) {
   arduboy = &_arduboy;
- 
-  bitmap = _bitmap;
 
   position = Vector2(_x, _y);
   velocity = Vector2(-1, 0);
 
   enabled = true;
+
+  giftType = random(0, 3);
 }
 
 /**
@@ -22,13 +23,17 @@ GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y, const unsigned char *
  */
 
 void GiftObject::Update() {
+  if (position.x <= -16) {
+    enabled = true;
+    position.x = 128;
+    giftType = random(0, 3);
+  }
+  
+  updatePosition();
+
   if (!enabled)
     return;
   
-  if (position.x <= -16)
-    position.x = 128;
-  
-  updatePosition();
   draw();
 }
 
@@ -47,8 +52,18 @@ void GiftObject::SetVelocity(int x, int y) {
  */
 
 void GiftObject::draw() {
-  arduboy->fillRect(position.x, position.y, IMAGE_SIZE, IMAGE_SIZE, BLACK);
-  arduboy->drawBitmap(position.x, position.y, bitmap, IMAGE_SIZE, IMAGE_SIZE, WHITE);
+  arduboy->fillRect(position.x - 1, position.y - 1, IMAGE_SIZE + 2, IMAGE_SIZE + 2, BLACK);
+  switch(giftType) {
+    case 0:
+      arduboy->drawBitmap(position.x, position.y, love_gift, IMAGE_SIZE, IMAGE_SIZE, WHITE);
+      break;
+    case 1:
+      arduboy->drawBitmap(position.x, position.y, cylinder_gift, IMAGE_SIZE, IMAGE_SIZE, WHITE);
+      break;
+    case 2:
+      arduboy->drawBitmap(position.x, position.y, candy_gift, IMAGE_SIZE, IMAGE_SIZE, WHITE);
+      break;
+  }
 }
 
 void GiftObject::updatePosition() {

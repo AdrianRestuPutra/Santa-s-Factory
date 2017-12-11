@@ -3,35 +3,50 @@
 
 #include "GiftObject.h"
 #include "ConveyorLine.h"
+#include "PushObject.h"
+#include "PushedObject.h"
 
-GiftObject *objects[3];
+GiftObject *objects[6];
 
-ConveyorLine *bottomConveyors[9];
-ConveyorLine *leftConveyors[3];
-ConveyorLine *centerConveyors[3];
-ConveyorLine *rightConveyors[3];
+ConveyorLine *bottomConveyors[4];
+ConveyorLine *leftConveyors[2];
+ConveyorLine *centerConveyors[2];
+ConveyorLine *rightConveyors[2];
+
+PushObject *pushObject;
+
+PushedObject *pushedObjects[5];
+
+const int pushPositions[3] = {7, 32, 57};
 
 /**
  * State before playing
  */
 void statePrePlay() {
-  GiftObject *obj = new GiftObject(arduboy, 128, 42, right_off_arrow);
-  objects[0] = obj;
+  for (int i = 0; i < 6; i++) {
+    objects[i] = new GiftObject(arduboy, 128 + i * (8 + 16), 42);
+  }
 
   for (int i = 0; i < 4; i++) {
-    bottomConveyors[i] = new ConveyorLine(arduboy, 20 + (40 * i), 42, 40, right_off_arrow, Vector2(-1, 0));
+    bottomConveyors[i] = new ConveyorLine(arduboy, 20 + (40 * i), 42, 40, conveyor_left, Vector2(-1, 0));
   }
 
   for (int i = 0; i < 2; i++) {
-    leftConveyors[i] = new ConveyorLine(arduboy, 7, (32 * i) + 5, 32, right_off_arrow, Vector2(0, -1));
+    leftConveyors[i] = new ConveyorLine(arduboy, 7, (32 * i) + 5, 32, conveyor_up, Vector2(0, -1));
   }
 
   for (int i = 0; i < 2; i++) {
-    centerConveyors[i] = new ConveyorLine(arduboy, 32, (32 * i) + 5, 32, right_off_arrow, Vector2(0, -1));
+    centerConveyors[i] = new ConveyorLine(arduboy, 32, (32 * i) + 5, 32, conveyor_up, Vector2(0, -1));
   }
 
   for (int i = 0; i < 2; i++) {
-    rightConveyors[i] = new ConveyorLine(arduboy, 57, (32 * i) + 5, 32, right_off_arrow, Vector2(0, -1));
+    rightConveyors[i] = new ConveyorLine(arduboy, 57, (32 * i) + 5, 32, conveyor_up, Vector2(0, -1));
+  }
+
+  pushObject = new PushObject(arduboy, 57);
+
+  for (int i = 0; i < 5; i++) {
+    pushedObjects[i] = new PushedObject(arduboy);
   }
 }
 
@@ -39,11 +54,44 @@ void statePrePlay() {
  * State playing
  */
 void drawLayout();
+void drawPushObject();
+void drawBoxIndicator();
+void handleInput();
  
 void statePlaying() {
+  handleInput();
+  
   drawLayout();
 
-  // objects[0]->Update();
+  for (int i = 0; i < 6; i++)
+    objects[i]->Update();
+  
+  pushObject->Update();
+
+  for (int i = 0; i < 5; i++)
+    pushedObjects[i]->Update();
+
+  drawBoxIndicator();
+}
+
+void handleInput() {
+  if (arduboy.justPressed(A_BUTTON)) {
+    int currentIndex = pushObject->pushCurrentIndex;
+
+    for (int i = 0; i < 6; i++) {
+      if (objects[i]->enabled && abs(objects[i]->position.x - pushPositions[currentIndex]) < 10) {
+        objects[i]->enabled = false;
+
+        for (int j = 0; j < 5; j++) {
+          if (!pushedObjects[j]->enabled) {
+            pushedObjects[j]->Trigger(objects[i]->giftType, currentIndex);
+            break;
+          }
+        }
+        break;
+      }
+    }
+  }
 }
 
 void drawLayout() {
@@ -89,6 +137,17 @@ void drawLayout() {
     * Draw top black box
     */
     arduboy.fillRect(0, 0, 128, 5, BLACK);
+}
+
+void drawBoxIndicator() {
+  arduboy.fillRect(6, 6, 18, 18, BLACK);
+  arduboy.drawBitmap(7, 7, love_gift, 16, 16, WHITE);
+
+  arduboy.fillRect(31, 6, 18, 18, BLACK);
+  arduboy.drawBitmap(32, 7, cylinder_gift, 16, 16, WHITE);
+
+  arduboy.fillRect(56, 6, 18, 18, BLACK);
+  arduboy.drawBitmap(57, 7, candy_gift, 16, 16, WHITE);
 }
 
 #endif
