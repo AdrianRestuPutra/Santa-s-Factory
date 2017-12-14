@@ -4,15 +4,16 @@
 #include <Arduboy2.h>
 
 #include "Vector2.h"
+#include "GameState.h"
 
 class GiftObject {
   public:
     GiftObject();
-    GiftObject(Arduboy2 &arduboy, int x, int y);
+    GiftObject(Arduboy2 &arduboy, int x, int y, GameState *gameState);
     
     void SetPosition(int x, int y);
     void SetVelocity(int x, int y);
-    void Update();
+    void Update(int *level);
 
     bool enabled;
     
@@ -24,6 +25,8 @@ class GiftObject {
     Arduboy2 *arduboy;
 
     Vector2 velocity;
+
+    GameState *gameState;
 
     void draw();
     void updatePosition();

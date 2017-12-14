@@ -6,10 +6,15 @@ Arduboy2 arduboy;
 ArduboyTones sound(arduboy.audio.enabled);
 
 // Santa Factory Library
+#include "GameState.h"
 #include "Images.h"
+
+#include "MainMenuScene.h"
 #include "GameScene.h"
 
 using namespace std;
+
+GameState *gameState;
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,7 +22,8 @@ void setup() {
   arduboy.setFrameRate(36);
   arduboy.initRandomSeed();
 
-  statePrePlay();
+  gameState = new GameState();
+  initiateGameScene(gameState);
 }
 
 void loop() {
@@ -27,7 +33,20 @@ void loop() {
   arduboy.clear();
   arduboy.pollButtons();
 
-  statePlaying();
+  switch (gameState->currentState) {
+    case STATE_CREDIT:
+      stateCredit(gameState);
+      break;
+    case STATE_PRE_PLAYING:
+      statePrePlaying(gameState);
+      break;
+    case STATE_PLAYING:
+      statePlaying();
+      break;
+    case STATE_MAIN_MENU:
+      stateMainMenu(gameState);
+      break;
+  }
 
   arduboy.display();
 }

@@ -19,12 +19,15 @@ PushedObject *pushedObjects[5];
 
 const int pushPositions[3] = {7, 32, 57};
 
+int score = 0;
+int level = 3;
+
 /**
  * State before playing
  */
-void statePrePlay() {
+void initiateGameScene(GameState *gameState) {
   for (int i = 0; i < 6; i++) {
-    objects[i] = new GiftObject(arduboy, 128 + i * (8 + 16), 42);
+    objects[i] = new GiftObject(arduboy, 128 + i * (8 + 16), 42, gameState);
   }
 
   for (int i = 0; i < 4; i++) {
@@ -46,8 +49,24 @@ void statePrePlay() {
   pushObject = new PushObject(arduboy, 57);
 
   for (int i = 0; i < 5; i++) {
-    pushedObjects[i] = new PushedObject(arduboy);
+    pushedObjects[i] = new PushedObject(arduboy, gameState);
   }
+
+  score = 0;
+  level = 3;
+}
+
+void statePrePlaying(GameState *gameState) {
+  for (int i = 0; i < 6; i++) delete objects[i];
+  for (int i = 0; i < 4; i++) delete bottomConveyors[i];
+  for (int i = 0; i < 2; i++) delete leftConveyors[i];
+  for (int i = 0; i < 2; i++) delete centerConveyors[i];
+  for (int i = 0; i < 2; i++) delete rightConveyors[i];
+  delete pushObject;
+  for (int i = 0; i < 5; i++) delete pushedObjects[i];
+
+  initiateGameScene(gameState);
+  gameState->currentState = STATE_PLAYING;
 }
 
 /**
@@ -64,14 +83,18 @@ void statePlaying() {
   drawLayout();
 
   for (int i = 0; i < 6; i++)
-    objects[i]->Update();
+    objects[i]->Update(&level);
   
   pushObject->Update();
 
   for (int i = 0; i < 5; i++)
-    pushedObjects[i]->Update();
+    pushedObjects[i]->Update(&score);
 
   drawBoxIndicator();
+
+  if (score > 0) {
+    level = max((3 - (score / 10)), 0);
+  }
 }
 
 void handleInput() {
@@ -95,48 +118,55 @@ void handleInput() {
 }
 
 void drawLayout() {
-    /**
-    * Draw 3 fixed boxes
-    */
-    arduboy.fillRect(5,  5, 20, 20, WHITE);
-    arduboy.fillRect(30, 5, 20, 20, WHITE);
-    arduboy.fillRect(55, 5, 20, 20, WHITE);
+  /**
+  * Draw 3 fixed boxes
+  */
+  arduboy.fillRect(5,  5, 20, 20, WHITE);
+  arduboy.fillRect(30, 5, 20, 20, WHITE);
+  arduboy.fillRect(55, 5, 20, 20, WHITE);
 
-    /**
-    * Draw center convoyer
-    */
-    arduboy.fillRect(5, 24, 20, 17, WHITE);
-    arduboy.fillRect(30, 24, 20, 17, WHITE);
-    arduboy.fillRect(55, 24, 20, 17, WHITE);
+  /**
+  * Draw center convoyer
+  */
+  arduboy.fillRect(5, 24, 20, 17, WHITE);
+  arduboy.fillRect(30, 24, 20, 17, WHITE);
+  arduboy.fillRect(55, 24, 20, 17, WHITE);
 
-    for (int i = 0; i < 2; i++) {
-      leftConveyors[i]->Update();
-    }
+  for (int i = 0; i < 2; i++) {
+    leftConveyors[i]->Update();
+  }
 
-    for (int i = 0; i < 2; i++) {
-      centerConveyors[i]->Update();
-    }
+  for (int i = 0; i < 2; i++) {
+    centerConveyors[i]->Update();
+  }
 
-    for (int i = 0; i < 2; i++) {
-      rightConveyors[i]->Update();
-    }
+  for (int i = 0; i < 2; i++) {
+    rightConveyors[i]->Update();
+  }
 
-    /**
-    * Draw bottom convoyer
-    */
-    arduboy.fillRect(-1, 40, 130, 20, WHITE);
+  /**
+  * Draw bottom convoyer
+  */
+  arduboy.fillRect(-1, 40, 130, 20, WHITE);
 
-    /**
-    * Convoyer animation 
-    */
-    for (int i = 0; i < 4; i++) {
-      bottomConveyors[i]->Update();
-    }
+  /**
+  * Convoyer animation 
+  */
+  for (int i = 0; i < 4; i++) {
+    bottomConveyors[i]->Update();
+  }
 
-    /**
-    * Draw top black box
-    */
-    arduboy.fillRect(0, 0, 128, 5, BLACK);
+  /**
+  * Draw top black box
+  */
+  arduboy.fillRect(0, 0, 128, 5, BLACK);
+
+
+  arduboy.drawBitmap(80, 7, score_box, 8, 8, WHITE);
+  
+  arduboy.setCursor(90, 7);
+  arduboy.print(":");
+  arduboy.print(score);
 }
 
 void drawBoxIndicator() {

@@ -7,13 +7,14 @@ const static int IMAGE_SIZE = 16;
  * CONSTRUCTOR
  */
 
-GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y) {
+GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y, GameState *_gameState) {
   arduboy = &_arduboy;
+  gameState = _gameState;
 
   position = Vector2(_x, _y);
   velocity = Vector2(-1, 0);
 
-  enabled = true;
+  enabled = false;
 
   giftType = random(0, 3);
 }
@@ -22,9 +23,14 @@ GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y) {
  * PUBLIC METHOD
  */
 
-void GiftObject::Update() {
+void GiftObject::Update(int *level) {
   if (position.x <= -16) {
-    enabled = true;
+    if (enabled) {
+      gameState->currentState = STATE_MAIN_MENU;
+    }
+
+    if (random(0, *level) == 0)
+      enabled = true; 
     position.x = 128;
     giftType = random(0, 3);
   }

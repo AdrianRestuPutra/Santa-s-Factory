@@ -1,11 +1,11 @@
 #include "PushedObject.h"
-#include "Images.h"
 
 const static int IMAGE_SIZE = 16;
 const static int pushPositions[3] = {7, 32, 57};
 
-PushedObject::PushedObject(Arduboy2 &_arduboy) {
+PushedObject::PushedObject(Arduboy2 &_arduboy, GameState *_gameState) {
   arduboy = &_arduboy;
+  gameState = _gameState;
 
   enabled = false;
 }
@@ -19,13 +19,20 @@ void PushedObject::Trigger(int _giftType, int _pushIndex) {
   enabled = true;
 }
 
-void PushedObject::Update() {
+void PushedObject::Update(int *score) {
   if (!enabled) 
     return;
 
   if (position.y > 7) {
     position.y -= 1;
   } else {
+    if (enabled) {
+      if (giftType != pushIndex) {
+        gameState->currentState = STATE_MAIN_MENU;
+      } else {
+        *score += 1;
+      }
+    }
     enabled = false;
   }
   
