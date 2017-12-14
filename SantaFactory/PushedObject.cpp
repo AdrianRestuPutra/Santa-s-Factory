@@ -28,7 +28,7 @@ void PushedObject::Update(int *score) {
   } else {
     if (enabled) {
       if (giftType != pushIndex) {
-        gameState->currentState = STATE_MAIN_MENU;
+        gameState->currentState = STATE_PRE_GAME_OVER;
       } else {
         *score += 1;
       }

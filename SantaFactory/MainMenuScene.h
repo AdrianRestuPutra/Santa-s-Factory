@@ -36,14 +36,24 @@ void stateMainMenu(GameState *gameState) {
   if (arduboy.justPressed(A_BUTTON)) {
     if (mainMenuIndex == 0)
       gameState->currentState = STATE_PRE_PLAYING;
+    if (mainMenuIndex == 1)
+      gameState->currentState = STATE_HELP;
     if (mainMenuIndex == 2)
       gameState->currentState = STATE_CREDIT;
   }
 }
 
 void stateCredit(GameState *gameState) {
-  arduboy.drawBitmap(0, 0, credit_image, 128, 64, WHITE);
+  arduboy.drawBitmap(0, 10, credit_image, 128, 64, WHITE);
   
+  if (arduboy.justPressed(B_BUTTON))
+    gameState->currentState = STATE_MAIN_MENU;
+}
+
+void stateHelp(GameState *gameState) {
+  arduboy.drawRect(33, 1, 62, 62, WHITE);
+  arduboy.drawBitmap(34, 2, qr_code, 60, 60, WHITE);
+
   if (arduboy.justPressed(B_BUTTON))
     gameState->currentState = STATE_MAIN_MENU;
 }

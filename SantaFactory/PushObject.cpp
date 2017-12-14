@@ -34,7 +34,8 @@ void PushObject::Update() {
   
   handleInput();
   
-  arduboy->fillRect(pushPositions[pushCurrentIndex], y, 16, 32, BLACK);
+  arduboy->fillRect(pushPositions[pushCurrentIndex], y, 16, 5, BLACK);
+  arduboy->fillRect(pushPositions[pushCurrentIndex] + 2, y + 4, 12, 28, BLACK);
   arduboy->drawBitmap(pushPositions[pushCurrentIndex], y, push_image, 16, 32, WHITE);
 }
 

@@ -53,7 +53,7 @@ void initiateGameScene(GameState *gameState) {
   }
 
   score = 0;
-  level = 3;
+  level = 2;
 }
 
 void statePrePlaying(GameState *gameState) {
@@ -93,7 +93,7 @@ void statePlaying() {
   drawBoxIndicator();
 
   if (score > 0) {
-    level = max((3 - (score / 10)), 0);
+    level = max((2 - (score / 15)), 0);
   }
 }
 
@@ -118,6 +118,9 @@ void handleInput() {
 }
 
 void drawLayout() {
+  arduboy.drawBitmap(110, 20, steel_image, 16, 64, WHITE);
+  arduboy.drawBitmap(85, 30, steel_image, 16, 64, WHITE);
+  
   /**
   * Draw 3 fixed boxes
   */
@@ -147,6 +150,7 @@ void drawLayout() {
   /**
   * Draw bottom convoyer
   */
+  arduboy.fillRect(75, 39, (128 - 75), 22, BLACK);
   arduboy.fillRect(-1, 40, 130, 20, WHITE);
 
   /**
@@ -178,6 +182,43 @@ void drawBoxIndicator() {
 
   arduboy.fillRect(56, 6, 18, 18, BLACK);
   arduboy.drawBitmap(57, 7, candy_gift, 16, 16, WHITE);
+}
+
+/**
+ * GAME OVER
+ */
+
+int gameOverDelay = 30;
+
+void statePreGameOver(GameState *gameState) {
+  gameOverDelay = 30;
+  gameState->currentState = STATE_GAME_OVER;
+}
+
+void stateGameOver(GameState *gameState) {
+  if(gameOverDelay > 0)
+    arduboy.digitalWriteRGB(RGB_ON, RGB_OFF, RGB_OFF);
+
+  arduboy.drawBitmap(0, 0, game_over_image, 128, 64, WHITE);
+
+  int charLength = (15 * 5);
+  if (score < 10) charLength += 5;
+  else if (score < 100) charLength += 10;
+  else if (score < 1000) charLength += 15;
+  else charLength += 20;
+
+  arduboy.setCursor(55 - (charLength / 2), 50);
+  arduboy.print("YOU WRAP ");
+  arduboy.print(score);
+  arduboy.print(" GIFTS");
+  
+  if (gameOverDelay-- > 0)
+    return;
+
+  arduboy.digitalWriteRGB(RGB_OFF, RGB_OFF, RGB_OFF);
+  
+  if (arduboy.justPressed(A_BUTTON))
+    gameState->currentState = STATE_MAIN_MENU;
 }
 
 #endif

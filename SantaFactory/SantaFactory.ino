@@ -46,6 +46,15 @@ void loop() {
     case STATE_MAIN_MENU:
       stateMainMenu(gameState);
       break;
+    case STATE_PRE_GAME_OVER:
+      statePreGameOver(gameState);
+      break;
+    case STATE_GAME_OVER:
+      stateGameOver(gameState);
+      break;
+    case STATE_HELP:
+      stateHelp(gameState);
+      break;
   }
 
   arduboy.display();

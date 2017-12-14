@@ -26,7 +26,7 @@ GiftObject::GiftObject(Arduboy2 &_arduboy, int _x, int _y, GameState *_gameState
 void GiftObject::Update(int *level) {
   if (position.x <= -16) {
     if (enabled) {
-      gameState->currentState = STATE_MAIN_MENU;
+      gameState->currentState = STATE_PRE_GAME_OVER;
     }
 
     if (random(0, *level) == 0)

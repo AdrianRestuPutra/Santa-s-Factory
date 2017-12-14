@@ -6,6 +6,8 @@ const static int STATE_PRE_GAME_OVER = 1;
 const static int STATE_MAIN_MENU = 2;
 const static int STATE_PRE_PLAYING = 3;
 const static int STATE_CREDIT = 4;
+const static int STATE_GAME_OVER = 5;
+const static int STATE_HELP = 6;
 
 class GameState {
   public:
